@@ -1,8 +1,11 @@
 package com.devsuperior.client.services;
 
+import java.util.Optional;
+
 import com.devsuperior.client.dto.ClientDTO;
 import com.devsuperior.client.entities.Client;
 import com.devsuperior.client.repositories.ClientRepository;
+import com.devsuperior.client.services.exceptions.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,5 +25,12 @@ public class ClientService {
         Page<Client> list = repository.findAll(pageRequest);
         return list.map(x -> new ClientDTO(x));
     }
+
+    @Transactional(readOnly = true)
+	public ClientDTO findById(Long id) {
+        Optional<Client> obj = repository.findById(id);
+        Client entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+        return new ClientDTO(entity);
+	}
 
 }
